@@ -39,4 +39,8 @@ public class Account {
 	public void setBalance(double balance) {
 		this.balance = balance;
 	}
+	@Override
+	public String toString() {
+		return "Account [name=" + name + ", id=" + id + ", c_id=" + c_id + ", balance=" + balance + "]";
+	}
 }

@@ -30,6 +30,8 @@ public class Bank {
 		Account a;
 		a = new Account(name, id, c_id, balance);
 		accounts.put(a);
+		System.out.println("put account " + a + "and now let's find it");
+		System.out.println(findAccountByC_ID(c_id));
 		if(balance>=0) {
 			pos.put(a);
 		} else {
@@ -48,22 +50,26 @@ public class Bank {
 		}
 		
 	}
-	public void deposit(String name, int c_id, double ammount) {
+	public void deposit(String name, int c_id, double amount) {
 		Account a;
 		a=findAccountByC_ID(c_id);
+		if(a==null) {
+			System.out.println("no account number " + c_id);
+			return;
+		}
 		if(a.balance>=0) {
 			pos.delete(a);
 		} else {
 			neg.delete(a);
 		}
-		a.balance+=ammount;
+		a.balance+=amount;
 		if(a.balance>=0) {
 			pos.put(a);
 		} else {
 			neg.put(a);
 		}
 	}
-	private Account findAccountByC_ID(int c_id) {
+	public Account findAccountByC_ID(int c_id) {
 		Account query;
 		query = new Account("query", 0, c_id,0);
 		return accounts.get(query);
@@ -71,6 +77,13 @@ public class Bank {
 	}
 	public Account getMax() {
 		return pos.max()!=null? pos.max() : neg.max();
+	}
+	public String printMinus() {
+		String print="";
+		for(Account acc : neg) {
+			print+=acc.toString();
+		}
+		return print;
 	}
 	
 	

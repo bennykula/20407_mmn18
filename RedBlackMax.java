@@ -1,4 +1,5 @@
 import java.util.NoSuchElementException;
+import java.util.Stack;
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -29,6 +30,7 @@ public class RedBlackMax<Value> implements Iterable<Value>{
         	} else {
         		max=r;
         	}
+        	right=r;
         }
         public void setLeft(Node l) {
         	left=l;
@@ -340,9 +342,43 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 
 	@Override
 	public Iterator<Value> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new BSTIterator(root);
 	} 
+	private class BSTIterator implements Iterator<Value> {
+		private Stack<Node> stack;
+		
+		
+		public BSTIterator(Node root) {
+			stack=new Stack<Node>();
+			stack.push(root);
+		}
+		
+		@Override
+		public boolean hasNext() {
+			while(!stack.isEmpty() && stack.peek()==null) {
+				stack.pop();
+			}
+			return !stack.isEmpty();
+		}
+
+		@Override
+		public Value next() {
+			Node current;
+	        if (!hasNext()) {
+	            throw new NoSuchElementException("No more nodes in tree!");
+	        }
+			current=stack.pop();
+			while(current!=null) {
+				stack.push(current);
+				current=current.left;
+			}
+			if(current==null && !stack.isEmpty()) {
+				return stack.pop().val;
+			}
+			return null;
+		}
+		
+	}
 
     // the largest key in the subtree rooted at x; null if no such key
  /*   private Node max(Node x) { 
