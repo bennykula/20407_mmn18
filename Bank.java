@@ -30,8 +30,6 @@ public class Bank {
 		Account a;
 		a = new Account(name, id, c_id, balance);
 		accounts.put(a);
-		System.out.println("put account " + a + "and now let's find it");
-		System.out.println(findAccountByC_ID(c_id));
 		if(balance>=0) {
 			pos.put(a);
 		} else {
@@ -76,7 +74,7 @@ public class Bank {
 		
 	}
 	public Account getMax() {
-		return pos.max()!=null? pos.max() : neg.max();
+		return pos.isEmpty() ? neg.max() : pos.max();
 	}
 	public String printMinus() {
 		String print="";
