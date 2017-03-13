@@ -84,17 +84,12 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 
     /**
      * Returns the value associated with the given key.
-     * @param key the key
-     * @return the value associated with the given key if the key is in the symbol table
-     *     and {@code null} if the key is not in the symbol table
-     * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public Value get(Value val) {
         if (val == null) throw new IllegalArgumentException("argument to get() is null");
         return get(root, val);
     }
 
-    // value associated with the given key in subtree rooted at x; null if no such key
     private Value get(Node x, Value val) {
         while (x != null) {
             int cmp = comp.compare(val, x.val);
@@ -107,10 +102,6 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 
     /**
      * Does this symbol table contain the given key?
-     * @param key the key
-     * @return {@code true} if this symbol table contains {@code key} and
-     *     {@code false} otherwise
-     * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public boolean contains(Value val) {
         return get(val) != null;
@@ -120,16 +111,6 @@ public class RedBlackMax<Value> implements Iterable<Value>{
     *  Red-black tree insertion.
     ***************************************************************************/
 
-    /**
-     * Inserts the specified key-value pair into the symbol table, overwriting the old 
-     * value with the new value if the symbol table already contains the specified key.
-     * Deletes the specified key (and its associated value) from this symbol table
-     * if the specified value is {@code null}.
-     *
-     * @param key the key
-     * @param val the value
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
     public void put(Value val) {
         if (val == null) throw new IllegalArgumentException("Argument to put() is null");
         root = put(root, val);
@@ -137,7 +118,7 @@ public class RedBlackMax<Value> implements Iterable<Value>{
         // assert check();
     }
 
-    // insert the key-value pair in the subtree rooted at h
+    // insert  in the subtree rooted at h
     private Node put(Node h, Value val) { 
         if (h == null) return new Node(val, RED, 1);
 
@@ -159,7 +140,7 @@ public class RedBlackMax<Value> implements Iterable<Value>{
     *  Red-black tree deletion.
     ***************************************************************************/
     /**
-     * Removes the smallest key and associated value from the symbol table.
+     * Removes the smallest value from the symbol table.
      * @throws NoSuchElementException if the symbol table is empty
      */
     public void deleteMin() {
@@ -174,7 +155,7 @@ public class RedBlackMax<Value> implements Iterable<Value>{
         // assert check();
     }
 
-    // delete the key-value pair with the minimum key rooted at h
+    // delete the value with the minimum key rooted at h
     private Node deleteMin(Node h) { 
         if (h.left == null)
             return null;
@@ -197,13 +178,10 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 
         root = delete(root, val);
         if (!isEmpty()) root.color = BLACK;
-        // assert check();
     }
 
-    // delete the key-value pair with the given key rooted at h
+    // delete the value with the given key rooted at h
     private Node delete(Node h, Value val) { 
-        // assert get(h, key) != null;
-
         if (comp.compare(val, h.val) < 0)  {
             if (!isRed(h.left) && !isRed(h.left.left))
                 h = moveRedLeft(h);
@@ -232,7 +210,6 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 
     // make a left-leaning link lean to the right
     private Node rotateRight(Node h) {
-        // assert (h != null) && isRed(h.left);
         Node x = h.left;
         h.setLeft(x.right);
         x.setRight(h);
@@ -245,7 +222,6 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 
     // make a right-leaning link lean to the left
     private Node rotateLeft(Node h) {
-        // assert (h != null) && isRed(h.right);
         Node x = h.right;
         h.setRight(x.left);
         x.setLeft(h);
@@ -259,9 +235,6 @@ public class RedBlackMax<Value> implements Iterable<Value>{
     // flip the colors of a node and its two children
     private void flipColors(Node h) {
         // h must have opposite color of its two children
-        // assert (h != null) && (h.left != null) && (h.right != null);
-        // assert (!isRed(h) &&  isRed(h.left) &&  isRed(h.right))
-        //    || (isRed(h)  && !isRed(h.left) && !isRed(h.right));
         h.color = !h.color;
         h.left.color = !h.left.color;
         h.right.color = !h.right.color;
@@ -270,9 +243,6 @@ public class RedBlackMax<Value> implements Iterable<Value>{
     // Assuming that h is red and both h.left and h.left.left
     // are black, make h.left or one of its children red.
     private Node moveRedLeft(Node h) {
-        // assert (h != null);
-        // assert isRed(h) && !isRed(h.left) && !isRed(h.left.left);
-
         flipColors(h);
         if (isRed(h.right.left)) { 
             h.setRight(rotateRight(h.right));
@@ -285,8 +255,6 @@ public class RedBlackMax<Value> implements Iterable<Value>{
     // Assuming that h is red and both h.right and h.right.left
     // are black, make h.right or one of its children red.
     private Node moveRedRight(Node h) {
-        // assert (h != null);
-        // assert isRed(h) && !isRed(h.right) && !isRed(h.right.left);
         flipColors(h);
         if (isRed(h.left.left)) { 
             h = rotateRight(h);
@@ -297,8 +265,6 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 
     // restore red-black tree invariant
     private Node balance(Node h) {
-        // assert (h != null);
-
         if (isRed(h.right))                      h = rotateLeft(h);
         if (isRed(h.left) && isRed(h.left.left)) h = rotateRight(h);
         if (isRed(h.left) && isRed(h.right))     flipColors(h);
@@ -328,9 +294,7 @@ public class RedBlackMax<Value> implements Iterable<Value>{
         return min(root).val;
     } 
 
-    // the smallest key in subtree rooted at x; null if no such key
     private Node min(Node x) { 
-        // assert x != null;
         if (x.left == null) return x; 
         else                return min(x.left); 
     } 
@@ -379,11 +343,6 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 		}
 		
 	}
-
-    // the largest key in the subtree rooted at x; null if no such key
- /*   private Node max(Node x) { 
-        return x.max;
-    }*/ 
 }
 
 
