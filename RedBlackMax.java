@@ -10,11 +10,12 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 
     protected Node root;     // root of the BST
     protected Comparator<Value> comp;
+    protected Node max;
     // BST helper node data type
     protected class Node {
         protected Value val;         // associated data
         private Node left, right;  // links to left and right subtrees
-        public Node max;
+        private Node parent;
         private boolean color;     // color of parent link
         private int size;          // subtree count
 
@@ -22,18 +23,17 @@ public class RedBlackMax<Value> implements Iterable<Value>{
             this.val = val;
             this.color = color;
             this.size = size;
-            max=this;
+            parent=null;
         }
         public void setRight(Node r) {
-        	if(r==null) {
-        		max=this;
-        	} else {
-        		max=r;
-        	}
         	right=r;
+        	if(right!=null)
+        		right.parent=this;
         }
         public void setLeft(Node l) {
         	left=l;
+        	if(left!=null)
+        		left.parent=this;
         }
 
     }
@@ -120,7 +120,15 @@ public class RedBlackMax<Value> implements Iterable<Value>{
 
     // insert  in the subtree rooted at h
     private Node put(Node h, Value val) { 
-        if (h == null) return new Node(val, RED, 1);
+        if (h == null) {
+        	Node n = new Node(val, RED, 1);
+        	if(max==null) {
+        		max=n;
+        	} else if(comp.compare(n.val, max.val)>=0) {
+        		max=n;
+        	}
+        	return n;
+        }
 
         int cmp = comp.compare(val, h.val);
         if      (cmp < 0) h.setLeft(put(h.left, val)); 
@@ -171,6 +179,9 @@ public class RedBlackMax<Value> implements Iterable<Value>{
     public void delete(Value val) { 
         if (val == null) throw new IllegalArgumentException("argument to delete() is null");
         if (!contains(val)) return;
+        if(comp.compare(val, max.val)==0) {
+        	max=predecessor(max);
+        }
 
         // if both children of root are black, set root to red
         if (!isRed(root.left) && !isRed(root.right))
@@ -298,11 +309,40 @@ public class RedBlackMax<Value> implements Iterable<Value>{
         if (x.left == null) return x; 
         else                return min(x.left); 
     } 
-
+    
     public Value max() {
+        if (isEmpty()) throw new NoSuchElementException("called min() with empty symbol table");
+        return max.val;
+    } 
+    
+    private Node max(Node x) { 
+        if (x.right == null) return x; 
+        else                return max(x.right); 
+    } 
+
+    private Node predecessor(Node x) {
+    	System.out.println("predeccesor was called");
+    	System.out.println("X is " + x.val);
+    	Node p;
+    	Node curr,prev;
+    	if(x==null)
+    		return null;
+    	if(x.left != null)
+    		return max(x.left);
+    	p = x.parent;
+    	curr=p;
+    	prev=x;
+    	while(curr!=null && prev==curr.left) {
+    		prev=curr;
+    		curr=curr.parent;
+    	}
+    	System.out.println("pre is "+ curr.val);
+    	return curr;
+    }
+    /*public Value max() {
         if (isEmpty()) throw new NoSuchElementException("called max() with empty symbol table");
         return root.max.val;
-    }
+    }*/
 
 	@Override
 	public Iterator<Value> iterator() {
